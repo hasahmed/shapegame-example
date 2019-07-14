@@ -1,0 +1,4 @@
+namespace shapegame {
+    class Debug {
+    };
+}
