@@ -3,11 +3,12 @@
 using namespace shapegame;
 
 
+
 class Enemy : public Rectangle {
     public:
         Enemy(Position pos) : Rectangle(40, 40, pos, Color::RED) {}
         void update() override {
-            this->translate(0, 10);
+            this->translate(0, 5);
 
             /* If this enemy is below the screen */
             if (this->pos.y > 700) {
@@ -98,7 +99,10 @@ int main() {
     /* Add a child to the scene */
 	//game.scene->addChild(new TriangleIsosceles(100, 100, Position(100, 100), Color::BLACK));
 	game.scene->addChild(std::make_unique<Player>());
-	game.scene->addChild(std::make_unique<Enemy>(Position(100, 0)));
+    game.scene->addChild(std::make_unique<Timer>(1000, true, true, [](){
+            Game::inst().scene->addChild(std::make_unique<Enemy>(Position(200, -60)));
+        }
+    ));
 
     game.run();
 }
