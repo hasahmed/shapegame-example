@@ -1,6 +1,11 @@
 #include <iostream>
+#include <unordered_set>
+
 #include "shapegame.hpp"
 using namespace shapegame;
+
+class Enemy;
+std::unordered_set<Enemy*> enemy_list;
 
 
 
