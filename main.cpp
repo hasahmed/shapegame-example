@@ -4,14 +4,18 @@
 #include "shapegame.hpp"
 using namespace shapegame;
 
+/* Forward declaration so that enemyList can contain Enemies, and
+ * Enemy class can reference global enemyList */
 class Enemy;
-std::unordered_set<Enemy*> enemy_list;
+std::unordered_set<Enemy*> enemyList;
 
 
 
 class Enemy : public Rectangle {
     public:
-        Enemy(Position pos) : Rectangle(40, 40, pos, Color::RED) {}
+        Enemy(Position pos) : Rectangle(40, 40, pos, Color::RED) {
+            enemyList.insert(this);
+        }
         void update() override {
             this->translate(0, 5);
 
@@ -19,6 +23,7 @@ class Enemy : public Rectangle {
             if (this->pos.y > 700) {
                 /* This kill its self */
                 this->kill();
+                enemyList.erase(this);
             }
         }
 };
@@ -42,6 +47,15 @@ class Bullet : public Rectangle {
             if (this->pos.y < -30) {
                 /* This kill its self */
                 this->kill();
+            }
+            for (Enemy *enemy : enemyList) {
+                if ( // if is collision with enemy
+                        this->pos.y < enemy->pos.y &&
+                        this->pos.x + this->getWidth() < enemy->pos.x &&
+                       true 
+                        ) {
+                    this->kill();
+                }
             }
         }
 };
@@ -95,14 +109,13 @@ class Player : public TriangleIsosceles {
 int main() {
     /* Create a new Game object with window width, height, and window title */
 	Game game(400, 600, "SHMUP");
-    /* Set the background color of the scene */
+    //[> Set the background color of the scene <]
 	game.scene->setBackgroundColor(Color::BLUE);
 
-    /* Add a convenience key handler that closes the window when escape is pressed */
+    //[> Add a convenience key handler that closes the window when escape is pressed <]
     game.scene->addChild(std::make_unique<DebugKeyHandler>());
 
-    /* Add a child to the scene */
-	//game.scene->addChild(new TriangleIsosceles(100, 100, Position(100, 100), Color::BLACK));
+    //[> Add a child to the scene <]
 	game.scene->addChild(std::make_unique<Player>());
     game.scene->addChild(std::make_unique<Timer>(1000, true, true, [](){
             Game::inst().scene->addChild(std::make_unique<Enemy>(Position(200, -60)));
