@@ -4,6 +4,12 @@
 #include "shapegame.hpp"
 using namespace shapegame;
 
+#define ENEMY_WIDTH 40
+#define ENEMY_HEIGHT 40
+
+#define BULLET_WIDTH 5
+#define BULLET_HEIGHT 30
+
 /* Forward declaration so that enemyList can contain Enemies, and
  * Enemy class can reference global enemyList */
 class Enemy;
@@ -13,7 +19,7 @@ std::unordered_set<Enemy*> enemyList;
 
 class Enemy : public Rectangle {
     public:
-        Enemy(Position pos) : Rectangle(40, 40, pos, Color::RED) {
+        Enemy(Position pos) : Rectangle(ENEMY_WIDTH, ENEMY_HEIGHT, pos, Color::RED) {
             enemyList.insert(this);
         }
         void update() override {
@@ -34,7 +40,7 @@ class Bullet : public Rectangle {
         /* A constructor for our bullet class that takes a Position as an argument
          * It then initilizes the rectangle that will be representing the bullet
          * with a width, height, position, and color */
-        Bullet(Position pos) : Rectangle(5, 30, pos, Color::WHITE) {}
+        Bullet(Position pos) : Rectangle(BULLET_WIDTH, BULLET_HEIGHT, pos, Color::WHITE) {}
 
 
         /* Override the update method. This will be called every frame by the
@@ -50,11 +56,13 @@ class Bullet : public Rectangle {
             }
             for (Enemy *enemy : enemyList) {
                 if ( // if is collision with enemy
-                        this->pos.y < enemy->pos.y &&
-                        this->pos.x + this->getWidth() < enemy->pos.x &&
-                       true 
+                    this->pos.y < enemy->pos.y + ENEMY_HEIGHT && // TOP-BOTTOM
+                    this->pos.y + BULLET_HEIGHT > enemy->pos.y &&
+                    this->pos.x + BULLET_WIDTH > enemy->pos.x &&
+                    this->pos.x < enemy->pos.x + ENEMY_WIDTH
                         ) {
                     this->kill();
+                    break;
                 }
             }
         }
