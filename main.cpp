@@ -32,6 +32,8 @@ class Enemy : public Rectangle {
                 enemyList.erase(this);
             }
         }
+        ~Enemy() {
+        }
 };
 
 
@@ -62,6 +64,8 @@ class Bullet : public Rectangle {
                     this->pos.x < enemy->pos.x + ENEMY_WIDTH
                         ) {
                     this->kill();
+                    enemyList.erase(enemy);
+                    enemy->kill();
                     break;
                 }
             }
