@@ -13,30 +13,36 @@ using namespace shapegame;
 /* Forward declaration so that enemyList can contain Enemies, and
  * Enemy class can reference global enemyList */
 class Enemy;
+// enemy list for collision handling (not handled by engine)
 std::unordered_set<Enemy*> enemyList;
 
 
-
+// enemy class extends rectangle class
 class Enemy : public Rectangle {
+    // Public Enemy
     public:
+        // enemy constructor initilizes rectangle base class
         Enemy(Position pos) : Rectangle(ENEMY_WIDTH, ENEMY_HEIGHT, pos, Color::RED) {
+            // adds its self to the enemy list for ad-hock (not handled by engine)
+            // collision handling
             enemyList.insert(this);
         }
+        // override update callback. Called every frame
         void update() override {
+            // move the enemy down 5 pixels on the y axsis every frame
             this->translate(0, 5);
-
             /* If this enemy is below the screen */
             if (this->pos.y > 700) {
-                /* This kill its self */
+                /* kill its self */
                 this->kill();
+                // and remove from enemy list
                 enemyList.erase(this);
             }
-        }
-        ~Enemy() {
         }
 };
 
 
+// Bullet class extends shapegame::Rectangle
 class Bullet : public Rectangle {
     public:
         /* A constructor for our bullet class that takes a Position as an argument
@@ -56,16 +62,25 @@ class Bullet : public Rectangle {
                 /* This kill its self */
                 this->kill();
             }
+            // loop through every enemy in the enemyList
+            // to check to see if this bullet is colliding
             for (Enemy *enemy : enemyList) {
                 if ( // if is collision with enemy
-                    this->pos.y < enemy->pos.y + ENEMY_HEIGHT && // TOP-BOTTOM
+                        // this is collision checking code.
+                        // Deciphering it is left as an exercise to the reader
+                    this->pos.y < enemy->pos.y + ENEMY_HEIGHT &&
                     this->pos.y + BULLET_HEIGHT > enemy->pos.y &&
                     this->pos.x + BULLET_WIDTH > enemy->pos.x &&
                     this->pos.x < enemy->pos.x + ENEMY_WIDTH
                         ) {
+                    // if enemy and bullet are colliding,
+                    // kill this (bullet)
                     this->kill();
+                    // remove colliding enemy from enemyList
                     enemyList.erase(enemy);
+                    // kill that enemy
                     enemy->kill();
+                    // leave the for-loop (no need to do any more processesing)
                     break;
                 }
             }
@@ -119,17 +134,19 @@ class Player : public TriangleIsosceles {
 };
 
 int main() {
-    /* Create a new Game object with window width, height, and window title */
+    /* Create a new Game object with window width, height, and title */
 	Game game(400, 600, "SHMUP");
-    //[> Set the background color of the scene <]
+    // Set the background color of the scene
 	game.scene->setBackgroundColor(Color::BLUE);
 
     //[> Add a convenience key handler that closes the window when escape is pressed <]
     game.scene->addChild(std::make_unique<DebugKeyHandler>());
 
-    //[> Add a child to the scene <]
+    // Add a new player to the scene
 	game.scene->addChild(std::make_unique<Player>());
+    // Add a timer to the scene
     game.scene->addChild(std::make_unique<Timer>(1000, true, true, [](){
+            // Add a new enemy every time the timer times out
             Game::inst().scene->addChild(std::make_unique<Enemy>(Position(200, -60)));
         }
     ));
