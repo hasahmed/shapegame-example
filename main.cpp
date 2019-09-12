@@ -1,14 +1,38 @@
 #include <iostream>
 #include <unordered_set>
+#include <cstdlib>
 
 #include "shapegame.hpp"
 using namespace shapegame;
 
-#define ENEMY_WIDTH 40
-#define ENEMY_HEIGHT 40
 
-#define BULLET_WIDTH 5
-#define BULLET_HEIGHT 30
+
+
+const int ENEMY_WIDTH = 40;
+const int ENEMY_HEIGHT = 40;
+
+const int BULLET_WIDTH = 5;
+const int BULLET_HEIGHT = 30;
+
+const int SCREEN_WIDTH = 400;
+const int SCREEN_HEIGHT = 600;
+
+
+const int KILL_DOWN = 700; // the point at wich things should kill themselves below the screen
+const int KILL_UP = -30; // the point at wich things should kill themselves above the screen
+
+const int ENEMY_SPEED = 5;
+
+const int BULLET_SPEED = 30;
+
+const int PLAYER_WIDTH = 50;
+const int PLAYER_HEIGHT = 50;
+
+
+const int BOTTOM_MARGIN = 10;
+
+//enemy spawn frequency in millisecionds
+const int ENEMY_SPAWN_FREQUENCY_MS = 1000;
 
 /* Forward declaration so that enemyList can contain Enemies, and
  * Enemy class can reference global enemyList */
@@ -30,9 +54,9 @@ class Enemy : public Rectangle {
         // override update callback. Called every frame
         void update() override {
             // move the enemy down 5 pixels on the y axsis every frame
-            this->translate(0, 5);
+            this->translate(0, ENEMY_SPEED);
             /* If this enemy is below the screen */
-            if (this->pos.y > 700) {
+            if (this->pos.y > KILL_DOWN) {
                 /* kill its self */
                 this->kill();
                 // and remove from enemy list
@@ -55,10 +79,10 @@ class Bullet : public Rectangle {
          * engine once the object instance is added to the scene */
         void update() override {
             /* Every frame move up pixels */
-            this->translate(0, -30);
+            this->translate(0, -BULLET_SPEED);
 
             /* If this bullet is above the screen */
-            if (this->pos.y < -30) {
+            if (this->pos.y < -KILL_UP) {
                 /* This kill its self */
                 this->kill();
             }
@@ -97,12 +121,12 @@ class Player : public TriangleIsosceles {
         /* Construct the player with a triangle 100px wide, 100px tall
          * at position 100, 100, and with a color of green
          */
-        Player() : TriangleIsosceles(50, 50, Position(100, 100), Color::GREEN) {}
+        Player() : TriangleIsosceles(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), Color::GREEN) {}
 
         /* Override the update method. This method is called every frame */
         void update() override {
             /* Set the X position of the player to the X position of the mouse */
-            this->setPosition(Position(Input::Mouse::getPos().x, 590));
+            this->setPosition(Position(Input::Mouse::getPos().x, SCREEN_HEIGHT - BOTTOM_MARGIN));
             /* Move the player over 50 pixels so the mouse is in the middle */
             /* Origin is the corner by default */
             this->translate(-25, 0);
@@ -135,7 +159,7 @@ class Player : public TriangleIsosceles {
 
 int main() {
     /* Create a new Game object with window width, height, and title */
-	Game game(400, 600, "SHMUP");
+	Game game(SCREEN_WIDTH, SCREEN_HEIGHT, "SHMUP");
     // Set the background color of the scene
 	game.scene->setBackgroundColor(Color::BLUE);
 
@@ -145,9 +169,10 @@ int main() {
     // Add a new player to the scene
 	game.scene->addChild(std::make_unique<Player>());
     // Add a timer to the scene
-    game.scene->addChild(std::make_unique<Timer>(1000, true, true, [](){
+    game.scene->addChild(std::make_unique<Timer>(ENEMY_SPAWN_FREQUENCY_MS, true, true, [](){
             // Add a new enemy every time the timer times out
-            Game::inst().scene->addChild(std::make_unique<Enemy>(Position(200, -60)));
+            int enemySpawnX = rand() % SCREEN_WIDTH;
+            Game::inst().scene->addChild(std::make_unique<Enemy>(Position(enemySpawnX, -(ENEMY_HEIGHT + 20))));
         }
     ));
 
