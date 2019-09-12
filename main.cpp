@@ -171,7 +171,7 @@ int main() {
     // Add a timer to the scene
     game.scene->addChild(std::make_unique<Timer>(ENEMY_SPAWN_FREQUENCY_MS, true, true, [](){
             // Add a new enemy every time the timer times out
-            int enemySpawnX = rand() % SCREEN_WIDTH;
+            int enemySpawnX = (rand() % (SCREEN_WIDTH - ENEMY_WIDTH));
             Game::inst().scene->addChild(std::make_unique<Enemy>(Position(enemySpawnX, -(ENEMY_HEIGHT + 20))));
         }
     ));
