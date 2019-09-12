@@ -6,6 +6,8 @@
 using namespace shapegame;
 
 
+// unused variable for giving the player a shadow
+const Color SHADOW_COLOR = Color(0, 0, 0, 0.3);
 
 
 const int ENEMY_WIDTH = 40;
