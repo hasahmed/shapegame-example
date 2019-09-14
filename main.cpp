@@ -118,20 +118,26 @@ class Bullet : public Rectangle {
  * of the engine you need to create a class that overrides the callback
  * methods
  */
-class Player : public TriangleIsosceles {
+class Player : public MultiShape {
     public:
         /* Construct the player with a triangle 100px wide, 100px tall
          * at position 100, 100, and with a color of green
          */
-        Player() : TriangleIsosceles(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), Color::GREEN) {}
+        Player() : MultiShape(Position(100, 100)) {
+            // this adds the player shape
+            this->addShape(std::make_unique<TriangleIsosceles>(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), Color::GREEN));
+            //this->addShape(std::make_unique<TriangleIsosceles>(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), SHADOW_COLOR));
+        }
 
         /* Override the update method. This method is called every frame */
         void update() override {
             /* Set the X position of the player to the X position of the mouse */
             this->setPosition(Position(Input::Mouse::getPos().x, SCREEN_HEIGHT - BOTTOM_MARGIN));
-            /* Move the player over 50 pixels so the mouse is in the middle */
+            /* Move the player over half the players width in pixels so the mouse is in the middle */
             /* Origin is the corner by default */
-            this->translate(-25, 0);
+            this->translate(-PLAYER_WIDTH / 2, 0);
+//TriangleIsosceles 
+//TriangleIsosceles(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), Color::GREEN) {}
         }
         /* override the mouse click handler to recieve callbacks when
          * mouse clicks happen
