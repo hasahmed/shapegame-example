@@ -7,7 +7,7 @@ using namespace shapegame;
 
 
 // unused variable for giving the player a shadow
-const Color SHADOW_COLOR = Color(0, 0, 0, 0.3);
+const Color SHADOW_COLOR = Color(0, 0, 0, 0.5);
 
 
 const int ENEMY_WIDTH = 40;
@@ -29,6 +29,9 @@ const int BULLET_SPEED = 30;
 
 const int PLAYER_WIDTH = 50;
 const int PLAYER_HEIGHT = 50;
+
+const int PLAYER_SHADOW_OFFSET_Y = 5;
+const int PLAYER_SHADOW_OFFSET_X = 10;
 
 
 const int BOTTOM_MARGIN = 10;
@@ -123,10 +126,18 @@ class Player : public MultiShape {
         /* Construct the player with a triangle 100px wide, 100px tall
          * at position 100, 100, and with a color of green
          */
-        Player() : MultiShape(Position(100, 100)) {
-            // this adds the player shape
-            this->addShape(std::make_unique<TriangleIsosceles>(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), Color::GREEN));
-            //this->addShape(std::make_unique<TriangleIsosceles>(PLAYER_WIDTH, PLAYER_HEIGHT, Position(100, 100), SHADOW_COLOR));
+        Player() : MultiShape() { // creates a multishape with a default position of 0,0
+            // add a shadow to the player. Note that the positions of the shapes
+            // being added to the multishape are NOT RELATIVE. They are all
+            // absolute positions. Also notice how we are adding the shadow
+            // FIRST. Before the player. This is because the z order of
+            // objects is defined by the order in which they were added
+            // i.e. objects added more recently will be added on top of 
+            // objects added before them
+            this->addShape(std::make_unique<TriangleIsosceles>(PLAYER_WIDTH, PLAYER_HEIGHT, Position(-PLAYER_SHADOW_OFFSET_X, PLAYER_SHADOW_OFFSET_Y), SHADOW_COLOR));
+            // this adds the player shape. Note that Position() by default
+            // has the x and y values set to 0s when no arguments are provided
+            this->addShape(std::make_unique<TriangleIsosceles>(PLAYER_WIDTH, PLAYER_HEIGHT, Position(), Color::GREEN));
         }
 
         /* Override the update method. This method is called every frame */
