@@ -23,7 +23,7 @@ const int SCREEN_HEIGHT = 600;
 const int KILL_DOWN = 700; // the point at wich things should kill themselves below the screen
 const int KILL_UP = -30; // the point at wich things should kill themselves above the screen
 
-const int ENEMY_SPEED = 5;
+const int ENEMY_SPEED = 100;
 
 const int BULLET_SPEED = 30;
 
@@ -58,8 +58,9 @@ class Enemy : public Rectangle {
         }
         // override update callback. Called every frame
         void update() override {
-            // move the enemy down 5 pixels on the y axsis every frame
-            this->translate(0, ENEMY_SPEED);
+            // move the enemy down (ENEMY_SPEED * delta) (frame rate independant movement)
+            // on the y axsis every frame
+            this->translate(0, ENEMY_SPEED * Globals::dt);
             /* If this enemy is below the screen */
             if (this->pos.y > KILL_DOWN) {
                 /* kill its self */
